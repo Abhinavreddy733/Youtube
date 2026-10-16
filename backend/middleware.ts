@@ -1,5 +1,5 @@
 import express from 'express'
-import { jwtVerify } from 'jose'
+import { jwtVerify, SignJWT } from 'jose'
 import type { Response, Request, NextFunction } from 'express'
 import { ResponseStatus,type ResponseStatusType } from './responseStatus'
 import { prisma } from "./db";
@@ -17,6 +17,14 @@ declare global {
 }
 
 export const JWT_SECRET = new TextEncoder().encode("ABHINAV"!)
+
+export const signToken = (userId: string, currentProfileId: string, activeChannelId?: string) => {
+    return new SignJWT({ id: userId, activeChannelId, currentProfileId })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setExpirationTime('7d')
+        .sign(JWT_SECRET)
+}
 
 export const profileMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.token

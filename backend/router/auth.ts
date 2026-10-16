@@ -84,10 +84,6 @@ router.post('/signin', async (req, res) => {
         return sendResponse(res, ResponseStatus.BAD_REQUEST)
     }
 
-    const token = req.cookies.token;
-
-    const { payload } = await jwtVerify(token, JWT_SECRET);
-
     try {
         const userData = await prisma.user.findUnique({
             where: { email: data.email },
