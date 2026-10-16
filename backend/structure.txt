@@ -1,0 +1,14 @@
+// Complete Backend Structure - 
+
+- Auth Routes - 
+    - /Signup - User Signup by providing all these details - email, username, passwordHash, gender, DOB.
+    - /Signin - email and passwordHash
+
+    - these 2 Signup and Signin routes should return a JWT
+    - JWT will store the UserId and activeAccountId
+    - activeAccountId - If there is no account for user then activeAccountId will be undefined and if user have any acount, then activeAccountId will be his last used accountId
+    
+
+
+
+

@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String          @id @default(cuid())
+  email             String          @unique
+  username          String
+  passwordHash      String
+  gender            Gender?
+  Dob               DateTime?
+  personalProfileId String?
+  lastUsedProfileId String?
+  profiles          Profile[]
+  channels          Channel[]
+}
+
+model Profile {
+  id        String     @id @default(cuid())
+  userId    String
+  channelId String?
+  channel   Channel?
+  playlists Playlist[]
+  history   History[]
+  playlistcontent PlaylistContent[]
+  likes     Like[]
+  comments Comment[]
+  videos Video[]
+  searchHistory SearchHistory[]
+  subscriptions Subscription[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Channel {
+  id               String         @id @default(cuid())
+  channelName      String
+  channelBanner    String?
+  channelProfile   String? @unique
+  subCount         Int? @default(0)
+  discription      String?
+  totalViewCount   Int? @default(0)
+  totalRevemue     Int? @default(0)
+  totalVideos      Int? @default(0)
+  country          Country
+  channelCreatedAt DateTime       @default(now())
+  userId           String         
+  profileId String @unique
+  profile Profile @relation(fields: [profileId], references: [id])
+  user             User           @relation(fields: [userId], references: [id])
+  Subscriber       Subscription[]
+  videos           Video[]
+
+  @@unique([userId,profileId ])
+}
+
+model Subscription {
+  id            String   @id @default(cuid())
+  channelId     String
+  profileId String
+  subscribedAt  DateTime @default(now())
+  notifications Boolean  @default(true)
+  channel       Channel  @relation(fields: [channelId], references: [id])
+  profile Profile @relation(fields: [profileId], references: [id])
+}
+
+model Video {
+  id           String      @id @default(cuid())
+  title        String
+  likes        Int?
+  dislikes     Int?
+  views        Int?
+  status       VideoStatus @default(PENDING)
+  listed       Visibility
+  mimeType     String
+  size         Int?
+  thumbnailUrl String?
+  shareLink    String?
+  channelId    String
+  profileId String
+  channel      Channel     @relation(fields: [channelId], references: [id])
+  profile Profile @relation(fields: [profileId], references: [id])
+  history      History[]
+  playlistcontent     PlaylistContent[]
+  comments     Comment[]
+  like         Like[]
+}
+
+model Comment {
+  id              String   @id @default(cuid())
+  profileId String
+  videoId         String
+  commentText     String
+  commentLikes    Int?
+  commentDislikes Int?
+  commentedAt     DateTime @default(now())
+  video           Video    @relation(fields: [videoId], references: [id])
+  profile         Profile    @relation(fields: [profileId], references: [id])
+
+}
+
+model Playlist {
+  id                String     @id @default(cuid())
+  profileId         String
+  platlistName      String
+  visibility        Visibility
+  playlistCreatedAt DateTime   @default(now())
+  profile           Profile    @relation(fields: [profileId], references: [id])
+  playlistContent   PlaylistContent[]
+}
+
+model PlaylistContent {
+  id                String     @id @default(cuid())
+  playlistId String
+  videoId           String
+  profileId         String
+  contentAddedAt DateTime   @default(now())
+  video             Video      @relation(fields: [videoId], references: [id])
+  profile           Profile    @relation(fields: [profileId], references: [id])
+  playlist Playlist @relation(fields: [playlistId], references: [id])
+}
+
+model History {
+  id        String  @id @default(cuid())
+  profileId String
+  videoId   String
+  video     Video   @relation(fields: [videoId], references: [id])
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model Like {
+  id        String  @id @default(cuid())
+  profileId String
+  videoId   String
+  video     Video   @relation(fields: [videoId], references: [id])
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model SearchHistory {
+  id         String   @id @default(cuid())
+  searchText String
+  profileId String 
+  searchedAt DateTime @default(now())
+  profile       Profile     @relation(fields: [profileId], references: [id])
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum Country {
+  India
+  USA
+  UK
+}
+
+enum VideoStatus {
+  PENDING
+  UPLOADED
+}
+
+enum Visibility {
+  Public
+  Private
+}

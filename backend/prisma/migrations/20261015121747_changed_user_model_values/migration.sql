@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "lastUsedProfileId" SET DATA TYPE TEXT,
+ALTER COLUMN "personalProfileId" SET DATA TYPE TEXT;
